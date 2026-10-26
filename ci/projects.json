@@ -1,0 +1,265 @@
+{
+  "myscoutee-agent": {
+    "type": "npm",
+    "depends_on": [
+      "myscoutee-skills"
+    ],
+    "fixtures": [
+      "myscoutee-skills"
+    ],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-agent"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Agent"
+  },
+  "myscoutee-base": {
+    "type": "java-base",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-base"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Base"
+  },
+  "myscoutee-components": {
+    "type": "angular-library",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-components"
+    },
+    "release_notes": "releases/v{version}.md",
+    "release_name": "MyScoutee Components"
+  },
+  "myscoutee-packaging": {
+    "type": "npm",
+    "depends_on": [],
+    "fixtures": [
+      "myscoutee-backend",
+      "myscoutee-template",
+      "myscoutee-registry"
+    ],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-packaging"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Packaging"
+  },
+  "myscoutee-e2e": {
+    "type": "npm",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-e2e"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee E2E"
+  },
+  "myscoutee-qa": {
+    "type": "npm",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-qa"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee QA"
+  },
+  "myscoutee-nginx": {
+    "type": "nginx-image",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-nginx"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Nginx"
+  },
+  "myscoutee-mcp": {
+    "type": "go-image",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-mcp"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee MCP"
+  },
+  "myscoutee-registry": {
+    "type": "go-image",
+    "depends_on": [
+      "myscoutee-packaging"
+    ],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-registry"
+    },
+    "release_notes": "guides/development/releases/v{version}.md",
+    "release_name": "MyScoutee Registry"
+  },
+  "myscoutee-payment-simulator": {
+    "type": "go-image",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-payment-simulator"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Payment Simulator"
+  },
+  "myscoutee": {
+    "type": "frontend",
+    "depends_on": [
+      "myscoutee-components"
+    ],
+    "workspace_path": "myscoutee-backend/frontend",
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee"
+  },
+  "myscoutee-template-frontend": {
+    "type": "frontend",
+    "depends_on": [
+      "myscoutee-components"
+    ],
+    "workspace_path": "myscoutee-template/frontend",
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-template-frontend"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Template Frontend"
+  },
+  "myscoutee-backend": {
+    "type": "application",
+    "depends_on": [
+      "myscoutee",
+      "myscoutee-base",
+      "myscoutee-packaging",
+      "myscoutee-nginx",
+      "myscoutee-mcp",
+      "myscoutee-registry",
+      "myscoutee-payment-simulator",
+      "myscoutee-microservices",
+      "myscoutee-e2e",
+      "myscoutee-qa"
+    ],
+    "frontend": "myscoutee",
+    "deploy": [
+      "kvm",
+      "vmware",
+      "monolith",
+      "netcup"
+    ],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-backend",
+      "LAB_KUBE_CONTEXT": "myscoutee/ci:backend-kvm",
+      "LAB_KUBE_NAMESPACE": "myscoutee-msc121",
+      "MYSCOUTEE_COMPATIBLE_PACKAGE_VERSIONS": "1.5.0"
+    },
+    "release_notes": "guides/development/releases/v{version}.md",
+    "release_name": "MyScoutee Backend"
+  },
+  "myscoutee-template": {
+    "type": "application",
+    "depends_on": [
+      "myscoutee-template-frontend",
+      "myscoutee-base",
+      "myscoutee-packaging",
+      "myscoutee-nginx",
+      "myscoutee-mcp",
+      "myscoutee-microservices",
+      "myscoutee-e2e",
+      "myscoutee-qa"
+    ],
+    "frontend": "myscoutee-template-frontend",
+    "deploy": [
+      "kvm",
+      "vmware",
+      "monolith",
+      "netcup"
+    ],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-template",
+      "LAB_KUBE_CONTEXT": "myscoutee/ci:template-kvm",
+      "LAB_KUBE_NAMESPACE": "myscoutee-template",
+      "MYSCOUTEE_COMPATIBLE_PACKAGE_VERSIONS": "1.5.0"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Template"
+  },
+  "myscoutee-client": {
+    "type": "java-client",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-client"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Client"
+  },
+  "myscoutee-client-admin": {
+    "type": "python-deb",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-client-admin"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Client Admin"
+  },
+  "myscoutee-microservices": {
+    "type": "source",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-microservices"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "terraform_module": {
+      "name": "labkvm",
+      "system": "libvirt",
+      "directory": "infra",
+      "subdirectory": "terraform",
+      "version": "1.5.0"
+    },
+    "release_name": "MyScoutee Microservices"
+  },
+  "myscoutee-skills": {
+    "type": "source",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-skills"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Skills"
+  },
+  "myscoutee-roadmap": {
+    "type": "source",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-roadmap"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Roadmap"
+  },
+  "myscoutee-sonarqube": {
+    "type": "source",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-sonarqube"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee SonarQube"
+  },
+  "myscoutee-old": {
+    "type": "legacy-source",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-old"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee Old"
+  },
+  "myscoutee-ci": {
+    "type": "ci",
+    "depends_on": [],
+    "variables": {
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-ci"
+    },
+    "release_notes": "guides/releases/v{version}.md",
+    "release_name": "MyScoutee CI"
+  }
+}

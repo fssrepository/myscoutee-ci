@@ -1,0 +1,12 @@
+{
+  "chart": {
+    "version": "2.33.0",
+    "agentVersion": "v19.5.0",
+    "url": "https://gitlab-charts.s3.amazonaws.com/gitlab-agent-2.33.0.tgz",
+    "sha256": "5a780463754750aeac46b6baf09b125a0277ff8c4220780ccb40cb8b0ff227ac"
+  },
+  "agents": {
+    "backend-kvm": {"project": "myscoutee-backend", "environment": "kvm", "namespace": "myscoutee-msc121"},
+    "template-kvm": {"project": "myscoutee-template", "environment": "kvm", "namespace": "myscoutee-template"}
+  }
+}

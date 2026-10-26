@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.local/
+state/
+work/
+artifacts/
+*.local.*
+*.pem
+*.key
+*.credentials
+__pycache__/

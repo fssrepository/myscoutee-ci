@@ -1,0 +1,8 @@
+{
+  "githubCli": {
+    "version": "2.103.2",
+    "url": "https://github.com/cli/cli/releases/download/v2.103.2/gh_2.103.2_linux_amd64.tar.gz",
+    "sha256": "62ccf747115ddc61237efffdde66a3c8f70ba249433dc64f70801089b59c59c8",
+    "member": "gh_2.103.2_linux_amd64/bin/gh"
+  }
+}

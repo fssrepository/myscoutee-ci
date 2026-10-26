@@ -1,0 +1,10 @@
+{
+  "protected": [
+    {
+      "name": "feature/*",
+      "push_access_level": 40,
+      "merge_access_level": 40,
+      "allow_force_push": false
+    }
+  ]
+}

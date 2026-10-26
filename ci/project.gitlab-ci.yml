@@ -1,0 +1,231 @@
+# Included by each repository config/ci/pipeline.yml at the pinned LAB_CI_REF.
+# This pipeline uses a dedicated shell group runner and pipeline-specific trees.
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api"'
+    - when: never
+
+stages: [prepare, dependencies, build, test, package, release, downstream, 'prepare:deploy', deploy, verify]
+
+default:
+  tags: [lab-build]
+  interruptible: false
+  before_script:
+    - |
+      set -eu
+      : "${LAB_CI_PATH:?Set the shared CI project path at group level}"
+      : "${LAB_CI_REF:?Pin the reviewed CI library commit at group level}"
+      export LAB_LIBRARY="$CI_PROJECT_DIR/.lab/library"
+      if [ ! -d "$LAB_LIBRARY/.git" ]; then
+        test ! -e "$CI_PROJECT_DIR/.lab/library-ref"
+        mkdir -p "$CI_PROJECT_DIR/.lab"
+        printf '%s\n' '#!/bin/sh' 'case "$1" in *Username*) echo gitlab-ci-token;; *) printf "%s\n" "$CI_JOB_TOKEN";; esac' > "$CI_PROJECT_DIR/.lab/askpass"
+        chmod 700 "$CI_PROJECT_DIR/.lab/askpass"
+        GIT_ASKPASS="$CI_PROJECT_DIR/.lab/askpass" GIT_TERMINAL_PROMPT=0 git -c credential.helper= clone --quiet "$CI_SERVER_URL/$LAB_CI_PATH.git" "$LAB_LIBRARY"
+        rm "$CI_PROJECT_DIR/.lab/askpass"
+        git -C "$LAB_LIBRARY" checkout --quiet --detach "$LAB_CI_REF"
+        printf '%s\n' "$LAB_CI_REF" > "$CI_PROJECT_DIR/.lab/library-ref"
+      fi
+      test "$(git -C "$LAB_LIBRARY" rev-parse HEAD)" = "$(cat "$CI_PROJECT_DIR/.lab/library-ref")"
+
+variables:
+  GIT_DEPTH: "0"
+  GIT_STRATEGY: none
+  GIT_CLONE_PATH: "$CI_BUILDS_DIR/$CI_PROJECT_ID/$CI_PIPELINE_ID/$CI_PROJECT_NAME"
+  GIT_SUBMODULE_STRATEGY: none
+
+prepare:
+  stage: prepare
+  interruptible: true
+  variables:
+    GIT_STRATEGY: clone
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" prepare']
+  artifacts:
+    paths: [.lab/plan.json]
+    expire_in: 7 days
+
+dependencies:
+  stage: dependencies
+  interruptible: true
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" dependencies']
+
+test:
+  stage: test
+  when: manual
+  allow_failure: true
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" test']
+
+build:
+  stage: build
+  interruptible: true
+  resource_group: project-build
+  rules:
+    - if: '$LAB_HEAVY_BUILD == "true"'
+      when: manual
+      interruptible: false
+    - when: on_success
+  allow_failure: false
+  script:
+    - python3 "$LAB_LIBRARY/scripts/project.py" build
+    - python3 "$LAB_LIBRARY/scripts/project.py" package
+  artifacts:
+    paths: [.lab/artifact-manifest.json]
+    expire_in: 7 days
+
+package:deb:
+  stage: package
+  needs: [build]
+  rules:
+    - if: '$LAB_APPLICATION == "true"'
+      when: manual
+    - when: never
+  allow_failure: true
+  resource_group: candidate-$CI_PROJECT_ID-$CI_PIPELINE_ID
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" deb']
+
+package:kvm:
+  stage: package
+  needs: [build]
+  rules:
+    - if: '$LAB_APPLICATION == "true"'
+      when: manual
+    - when: never
+  allow_failure: true
+  resource_group: candidate-$CI_PROJECT_ID-$CI_PIPELINE_ID
+  environment: {name: kvm, action: prepare}
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" kvm']
+  artifacts:
+    paths: [.lab/kvm-assembly-plan.json]
+    expire_in: 7 days
+
+release:
+  stage: release
+  needs: [build]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: manual
+    - when: never
+  allow_failure: false
+  resource_group: candidate-$CI_PROJECT_ID-$CI_PIPELINE_ID
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" release']
+
+deploy:github:
+  stage: deploy
+  needs: [build]
+  rules:
+    - if: '$LAB_FRONTEND == "true" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: manual
+    - when: never
+  allow_failure: true
+  resource_group: pages-$CI_PROJECT_ID
+  environment: {name: github-pages}
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" pages']
+
+downstream:
+  stage: downstream
+  needs: [release]
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" downstream']
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+    - when: never
+
+.deploy:
+  stage: deploy
+  when: manual
+  allow_failure: true
+  needs: [build]
+  resource_group: candidate-$CI_PROJECT_ID-$CI_PIPELINE_ID
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" deploy']
+  rules:
+    - if: '$LAB_APPLICATION == "true" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: manual
+    - when: never
+
+deploy:kvm:
+  extends: .deploy
+  variables: {LAB_TARGET: kvm}
+  environment:
+    name: kvm
+    kubernetes:
+      agent: $LAB_KUBE_CONTEXT
+      dashboard:
+        namespace: $LAB_KUBE_NAMESPACE
+
+deploy:vmware:
+  extends: .deploy
+  rules:
+    - if: '$LAB_APPLICATION == "true" && $CI_COMMIT_REF_PROTECTED == "true" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^feature\//)'
+      when: manual
+    - when: never
+  variables: {LAB_TARGET: vmware}
+  environment: {name: vmware, url: "$LAB_VERIFY_URL"}
+
+deploy:monolith:
+  extends: .deploy
+  variables: {LAB_TARGET: monolith}
+  environment: {name: monolith}
+
+deploy:netcup:
+  extends: .deploy
+  variables: {LAB_TARGET: netcup}
+  environment: {name: netcup}
+
+# The existing public verifier remains an explicit operator command.
+.verify:
+  stage: verify
+  resource_group: candidate-$CI_PROJECT_ID-$CI_PIPELINE_ID
+  when: manual
+  allow_failure: true
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" verify']
+  rules:
+    - if: '$LAB_APPLICATION == "true" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: manual
+    - when: never
+
+verify:kvm:
+  extends: .verify
+  variables: {LAB_TARGET: kvm}
+  needs: ['deploy:kvm']
+  environment: {name: kvm, action: verify}
+
+verify:vmware:
+  extends: .verify
+  rules:
+    - if: '$LAB_APPLICATION == "true" && $CI_COMMIT_REF_PROTECTED == "true" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^feature\//)'
+      when: manual
+    - when: never
+  variables: {LAB_TARGET: vmware}
+  needs: ['deploy:vmware']
+  environment: {name: vmware, action: verify, url: "$LAB_VERIFY_URL"}
+
+verify:monolith:
+  extends: .verify
+  variables: {LAB_TARGET: monolith}
+  needs: ['deploy:monolith']
+  environment: {name: monolith, action: verify}
+
+verify:netcup:
+  extends: .verify
+  variables: {LAB_TARGET: netcup}
+  needs: ['deploy:netcup']
+  environment: {name: netcup, action: verify}
+
+infra:start:
+  extends: .deploy
+  stage: prepare:deploy
+  needs: [dependencies]
+  variables: {LAB_TARGET: kvm}
+  environment: {name: kvm, action: prepare}
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" infra_start']
+
+deploy:agent:
+  extends: .deploy
+  stage: deploy
+  needs: ['deploy:kvm']
+  variables: {LAB_TARGET: kvm}
+  environment: {name: kvm, action: access}
+  script: ['python3 "$LAB_LIBRARY/scripts/project.py" cluster']

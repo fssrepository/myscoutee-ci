@@ -1,0 +1,6 @@
+# Optional bridge-only exposure; enable explicitly via COMPOSE_FILE in .env.
+# The selected KVM bridge must already exist. Never default to all interfaces.
+services:
+  gitlab:
+    ports:
+      - "${GITLAB_KVM_BIND_ADDRESS:?Set the existing KVM bridge host IP}:${GITLAB_HTTP_PORT:-8929}:${GITLAB_HTTP_PORT:-8929}"

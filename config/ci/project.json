@@ -1,0 +1,10 @@
+{
+  "project": "myscoutee-ci",
+  "type": "ci",
+  "depends_on": [],
+  "variables": {
+    "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-ci"
+  },
+  "release_notes": "guides/releases/v{version}.md",
+  "release_name": "MyScoutee CI"
+}

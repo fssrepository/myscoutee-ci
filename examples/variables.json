@@ -1,0 +1,198 @@
+{
+  "gitlab": [
+    {
+      "key": "LAB_RELEASE_TOKEN",
+      "from_env": "LAB_RELEASE_TOKEN_FILE",
+      "from_file": true,
+      "masked": true
+    },
+    {
+      "key": "LAB_NPMRC",
+      "from_env": "LAB_NPMRC_FILE",
+      "from_file": true,
+      "variable_type": "file"
+    },
+    {
+      "key": "LAB_GRADLE_PROPERTIES",
+      "from_env": "LAB_GRADLE_PROPERTIES_FILE",
+      "from_file": true,
+      "variable_type": "file"
+    },
+    {
+      "key": "LAB_NPM_REGISTRY",
+      "from_env": "LAB_NPM_REGISTRY",
+      "protected": false,
+      "value": "https://npm.pkg.github.com"
+    },
+    {
+      "key": "LAB_IMAGE_NAMESPACE",
+      "from_env": "LAB_IMAGE_NAMESPACE",
+      "protected": false,
+      "value": "ghcr.io/fssrepository"
+    },
+    {
+      "key": "GITHUB_REPOSITORY_OWNER",
+      "from_env": "GITHUB_REPOSITORY_OWNER",
+      "protected": false,
+      "value": "fssrepository"
+    },
+    {
+      "key": "LAB_DOCKER_CONFIG",
+      "from_env": "LAB_DOCKER_CONFIG_FILE",
+      "from_file": true,
+      "variable_type": "file"
+    },
+    {
+      "key": "LAB_SIGNING_KEY",
+      "from_env": "LAB_SIGNING_KEY_FILE",
+      "from_file": true,
+      "variable_type": "file"
+    },
+    {
+      "key": "LAB_MICROSERVICES_REVISION",
+      "from_env": "LAB_MICROSERVICES_REVISION",
+      "protected": false,
+      "value": "09ad9760ab3e030334a82503cb232ef09366aee8"
+    },
+    {
+      "key": "LAB_FIXTURES",
+      "from_env": "LAB_FIXTURES",
+      "protected": false,
+      "value": "{\"myscoutee-backend\":\"62d7f776551253301eb39188dc5db419a6ff0df8\",\"myscoutee-registry\":\"d0ca9864145fa533521a4ea6123a0332bfc40eff\",\"myscoutee-skills\":\"178e0489c9f31a291ec337bf846dd65bf955c164\",\"myscoutee-template\":\"f829ec111986df4f5478bb849690e216fed026b4\"}"
+    },
+    {
+      "key": "GH_TOKEN",
+      "from_env": "GITHUB_TOKEN_FILE",
+      "from_file": true,
+      "masked": true
+    },
+    {
+      "key": "LAB_DOCKER_BUILD_NETWORK",
+      "from_env": "LAB_DOCKER_BUILD_NETWORK",
+      "value": "host",
+      "protected": false
+    },
+    {
+      "key": "LAB_TERRAFORM_BACKEND",
+      "from_env": "LAB_TERRAFORM_BACKEND",
+      "value": "gitlab",
+      "protected": false
+    },
+    {
+      "key": "LAB_TERRAFORM_STATE_NAME",
+      "from_env": "LAB_TERRAFORM_STATE_NAME",
+      "value": "kvm",
+      "protected": false
+    },
+    {
+      "key": "GRADLE_OPTS",
+      "from_env": "LAB_GRADLE_OPTS",
+      "value": "-Dorg.gradle.daemon=false",
+      "protected": false
+    }
+  ],
+  "github": [
+    {
+      "key": "LAB_RELEASE_TOKEN",
+      "from_env": "LAB_RELEASE_TOKEN_FILE",
+      "from_file": true,
+      "secret": true
+    },
+    {
+      "key": "LAB_NPMRC",
+      "from_env": "LAB_NPMRC_FILE",
+      "from_file": true,
+      "secret": true
+    },
+    {
+      "key": "LAB_GRADLE_PROPERTIES",
+      "from_env": "LAB_GRADLE_PROPERTIES_FILE",
+      "from_file": true,
+      "secret": true
+    },
+    {
+      "key": "LAB_NPM_REGISTRY",
+      "from_env": "LAB_NPM_REGISTRY",
+      "value": "https://npm.pkg.github.com"
+    },
+    {
+      "key": "LAB_IMAGE_NAMESPACE",
+      "from_env": "LAB_IMAGE_NAMESPACE",
+      "value": "ghcr.io/fssrepository"
+    },
+    {
+      "key": "LAB_DOCKER_CONFIG",
+      "from_env": "LAB_DOCKER_CONFIG_FILE",
+      "from_file": true,
+      "secret": true
+    },
+    {
+      "key": "LAB_SIGNING_KEY",
+      "from_env": "LAB_SIGNING_KEY_FILE",
+      "from_file": true,
+      "secret": true
+    },
+    {
+      "key": "LAB_MICROSERVICES_REVISION",
+      "from_env": "LAB_MICROSERVICES_REVISION",
+      "value": "09ad9760ab3e030334a82503cb232ef09366aee8"
+    },
+    {
+      "key": "LAB_FIXTURES",
+      "from_env": "LAB_FIXTURES",
+      "value": "{\"myscoutee-backend\":\"62d7f776551253301eb39188dc5db419a6ff0df8\",\"myscoutee-registry\":\"d0ca9864145fa533521a4ea6123a0332bfc40eff\",\"myscoutee-skills\":\"178e0489c9f31a291ec337bf846dd65bf955c164\",\"myscoutee-template\":\"f829ec111986df4f5478bb849690e216fed026b4\"}"
+    },
+    {
+      "key": "LAB_GITHUB_TOKEN",
+      "from_env": "GITHUB_TOKEN_FILE",
+      "from_file": true,
+      "secret": true
+    },
+    {
+      "key": "LAB_CI_REPOSITORY",
+      "from_env": "GITHUB_CI_REPOSITORY",
+      "value": "fssrepository/myscoutee-ci"
+    },
+    {
+      "key": "LAB_CI_REF",
+      "from_env": "GITHUB_CI_REF"
+    },
+    {
+      "key": "LAB_CANDIDATE_ROOT",
+      "from_env": "GITHUB_CANDIDATE_ROOT"
+    },
+    {
+      "key": "LAB_GROUP_PATH",
+      "from_env": "GITLAB_GROUP",
+      "value": "myscoutee"
+    },
+    {
+      "key": "LAB_GITLAB_URL",
+      "from_env": "LAB_GITLAB_URL",
+      "value": "http://localhost:8929"
+    },
+    {
+      "key": "LAB_DOCKER_BUILD_NETWORK",
+      "from_env": "LAB_DOCKER_BUILD_NETWORK",
+      "value": "host"
+    },
+    {
+      "key": "LAB_TERRAFORM_BACKEND",
+      "from_env": "LAB_TERRAFORM_BACKEND",
+      "value": "gitlab",
+      "protected": false
+    },
+    {
+      "key": "LAB_TERRAFORM_STATE_NAME",
+      "from_env": "LAB_TERRAFORM_STATE_NAME",
+      "value": "kvm",
+      "protected": false
+    },
+    {
+      "key": "GRADLE_OPTS",
+      "from_env": "LAB_GRADLE_OPTS",
+      "value": "-Dorg.gradle.daemon=false",
+      "protected": false
+    }
+  ]
+}

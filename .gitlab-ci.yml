@@ -1,0 +1,41 @@
+workflow:
+  rules:
+    - if: '$LAB_MAINTENANCE == "retention" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web")'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - when: never
+
+stages: [validate, release]
+
+validate:
+  stage: validate
+  tags: [lab-docker]
+  image: python:3.13-slim-bookworm
+  rules:
+    - if: '$LAB_MAINTENANCE == "retention"'
+      when: never
+    - when: on_success
+  script:
+    - python3 -m unittest discover -s tests -v
+    - python3 scripts/check-public.py
+    - python3 scripts/catalog.py
+
+validate:git:
+  stage: validate
+  tags: [lab-build]
+  rules:
+    - if: '$LAB_MAINTENANCE == "retention"'
+      when: never
+    - when: on_success
+  script:
+    - python3 -m unittest discover -s tests -p test_adapters.py -k source_archive -k application_patch -k frontend_snapshot -v
+
+maintenance:retention:
+  stage: validate
+  tags: [lab-build]
+  resource_group: lab-retention
+  rules:
+    - if: '$LAB_MAINTENANCE == "retention" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web")'
+    - when: never
+  script:
+    - python3 scripts/retention.py --state-dir "$LAB_RETENTION_STATE_DIR" --apply

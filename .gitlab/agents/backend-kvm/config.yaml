@@ -1,0 +1,9 @@
+ci_access:
+  projects:
+    - id: myscoutee/myscoutee-backend
+user_access:
+  access_as:
+    agent: {}
+  projects:
+    - id: myscoutee/myscoutee-backend
+    - id: myscoutee/ci

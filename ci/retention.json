@@ -1,0 +1,10 @@
+{
+  "keep_candidates_per_branch": 2,
+  "schedule": {
+    "description": "MyScoutee candidate retention",
+    "ref": "master",
+    "cron": "30 3 * * *",
+    "cron_timezone": "UTC",
+    "active": true
+  }
+}
