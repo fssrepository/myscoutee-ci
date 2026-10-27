@@ -59,13 +59,18 @@ def code(text):
 def frame(canvas, document):
     width, height = A4
     canvas.saveState()
-    canvas.drawImage(str(ROOT / "assets/heart.png"), 46, height - 77, width=43, height=43, mask="auto")
-    canvas.setFont("GuideBold", 20)
-    canvas.setFillColor(NAVY)
-    canvas.drawString(95, height - 56, "yScoutee")
-    canvas.setFont("Guide", 8)
-    canvas.setFillColor(MUTED)
-    canvas.drawString(96, height - 70, "Engineering documentation")
+    if document.page == 1:
+        canvas.drawImage(str(ROOT / "assets/heart.png"), 46, height - 77, width=43, height=43, mask="auto")
+        canvas.setFont("GuideBold", 20)
+        canvas.setFillColor(NAVY)
+        canvas.drawString(95, height - 56, "yScoutee")
+        canvas.setFont("Guide", 8)
+        canvas.setFillColor(MUTED)
+        canvas.drawString(96, height - 70, "Engineering documentation")
+    else:
+        canvas.setFont("GuideBold", 8)
+        canvas.setFillColor(NAVY)
+        canvas.drawString(46, height - 35, "MYSCOUTEE  /  ENGINEERING")
     canvas.setStrokeColor(LINE)
     canvas.line(46, 40, width - 46, 40)
     canvas.setFont("Guide", 7.4)
