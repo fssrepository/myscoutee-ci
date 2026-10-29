@@ -101,17 +101,17 @@
     "release_notes": "guides/releases/v{version}.md",
     "release_name": "MyScoutee Payment Simulator"
   },
-  "myscoutee": {
+  "myscoutee-frontend": {
     "type": "frontend",
     "depends_on": [
       "myscoutee-components"
     ],
-    "workspace_path": "myscoutee-backend/frontend",
+    "workspace_path": "myscoutee-backend/myscoutee-frontend",
     "variables": {
-      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee"
+      "LAB_GITHUB_REPOSITORY": "fssrepository/myscoutee-frontend"
     },
     "release_notes": "guides/releases/v{version}.md",
-    "release_name": "MyScoutee"
+    "release_name": "MyScoutee Frontend"
   },
   "myscoutee-template-frontend": {
     "type": "frontend",
@@ -128,7 +128,7 @@
   "myscoutee-backend": {
     "type": "application",
     "depends_on": [
-      "myscoutee",
+      "myscoutee-frontend",
       "myscoutee-base",
       "myscoutee-packaging",
       "myscoutee-nginx",
@@ -139,7 +139,7 @@
       "myscoutee-e2e",
       "myscoutee-qa"
     ],
-    "frontend": "myscoutee",
+    "frontend": "myscoutee-frontend",
     "deploy": [
       "kvm",
       "vmware",
